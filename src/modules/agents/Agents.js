@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import GlobalNav from '../../shared/components/GlobalNav';
 import './Agents.css';
 
 const Agents = () => {
@@ -37,24 +38,7 @@ const Agents = () => {
 
   return (
     <div className="agents">
-      <header className="agents-header">
-        <div className="container">
-          <div className="header-content">
-            <div className="logo">
-              <img src="/tusk-cpa-logo.png" alt="TuskCPA" />
-            </div>
-            <nav className="nav">
-              <Link to="/home" className="nav-link">Home</Link>
-              <Link to="/dashboard" className="nav-link">Dashboard</Link>
-              <Link to="/agents" className="nav-link active">Agents</Link>
-            </nav>
-            <div className="user-menu">
-              <span className="user-name">Welcome, John</span>
-              <button className="btn btn-secondary">Logout</button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <GlobalNav />
 
       <main className="agents-main">
         <div className="container">

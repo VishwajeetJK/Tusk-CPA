@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import GlobalNav from '../../shared/components/GlobalNav';
 import './Dashboard.css';
 
 const Dashboard = () => {
@@ -38,24 +39,7 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard">
-      <header className="dashboard-header">
-        <div className="container">
-          <div className="header-content">
-            <div className="logo">
-              <img src="/tusk-cpa-logo.png" alt="TuskCPA" />
-            </div>
-            <nav className="nav">
-              <Link to="/home" className="nav-link">Home</Link>
-              <Link to="/dashboard" className="nav-link active">Dashboard</Link>
-              <Link to="/agents" className="nav-link">Agents</Link>
-            </nav>
-            <div className="user-menu">
-              <span className="user-name">Welcome, John</span>
-              <button className="btn btn-secondary">Logout</button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <GlobalNav />
 
       <main className="dashboard-main">
         <div className="container">
