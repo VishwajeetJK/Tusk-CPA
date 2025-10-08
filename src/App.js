@@ -1,26 +1,31 @@
 import React from 'react';
-import Header from './components/Header';
-import Hero from './components/Hero';
-import HowItWorks from './components/HowItWorks';
-import Features from './components/Features';
-import Integrations from './components/Integrations';
-import Signup from './components/Signup';
-import Footer from './components/Footer';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
+
+// Import modules
+import LandingPage from './modules/landing-page/LandingPage';
+import HomePage from './modules/home-page/HomePage';
+import Dashboard from './modules/dashboards/Dashboard';
+import Agents from './modules/agents/Agents';
 
 function App() {
   return (
-    <div className="App">
-      <Header />
-      <main>
-        <Hero />
-        <HowItWorks />
-        <Features />
-        <Integrations />
-        <Signup />
-      </main>
-      <Footer />
-    </div>
+    <Router>
+      <div className="App">
+        <Routes>
+          {/* Public routes */}
+          <Route path="/" element={<LandingPage />} />
+          
+          {/* Authenticated routes */}
+          <Route path="/home" element={<HomePage />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/agents" element={<Agents />} />
+          
+          {/* Catch all route */}
+          <Route path="*" element={<LandingPage />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 

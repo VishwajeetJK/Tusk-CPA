@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Logo from './Logo';
+import Logo from '../../../shared/components/Logo';
 import './Header.css';
 
 const Header = () => {
@@ -65,3 +65,4 @@ const Header = () => {
 };
 
 export default Header;
+
