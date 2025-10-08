@@ -1,0 +1,9 @@
+name = "tusk-cpa-landing"
+compatibility_date = "2023-10-08"
+
+[env.production]
+name = "tusk-cpa-landing"
+
+[[env.production.routes]]
+pattern = "*"
+custom_domain = false
