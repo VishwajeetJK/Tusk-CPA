@@ -1,7 +1,69 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import {
+  DndContext,
+  DragOverlay,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import {
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import GlobalNav from '../../shared/components/GlobalNav';
 import './HomePage.css';
+
+// Sortable Ticket Component
+const SortableTicket = ({ ticket }) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: ticket.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      className="ticket-card"
+    >
+      <div className="ticket-header">
+        <span className={`priority-badge ${ticket.priority}`}>
+          <span className="priority-icon">
+            {ticket.priority === 'high' ? '🔴' : ticket.priority === 'medium' ? '🟡' : '🟢'}
+          </span>
+          {ticket.priority}
+        </span>
+        <span className="ticket-time">{ticket.created}</span>
+      </div>
+      <h4>{ticket.title}</h4>
+      <div className="ticket-client">
+        <span className="client-icon">🏢</span>
+        {ticket.client}
+      </div>
+    </div>
+  );
+};
 
 const HomePage = () => {
   const [aiQueries] = useState([
@@ -31,7 +93,7 @@ const HomePage = () => {
     }
   ]);
 
-  const [kanbanTickets] = useState({
+  const [kanbanTickets, setKanbanTickets] = useState({
     created: [
       { id: 1, title: 'Review Q4 financial statements', client: 'ABC Corp', priority: 'high', created: '2 hours ago' },
       { id: 2, title: 'Process payroll for December', client: 'XYZ LLC', priority: 'medium', created: '4 hours ago' }
@@ -43,6 +105,89 @@ const HomePage = () => {
       { id: 4, title: 'Monthly reconciliation', client: 'ABC Corp', priority: 'low', created: '2 days ago' }
     ]
   });
+
+  const [activeId, setActiveId] = useState(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragStart = (event) => {
+    setActiveId(event.active.id);
+  };
+
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+    setActiveId(null);
+
+    if (!over) return;
+
+    const activeId = active.id;
+    const overId = over.id;
+
+    // Find which column the active item is in
+    let activeColumn = null;
+    let activeIndex = -1;
+    
+    for (const [columnId, tickets] of Object.entries(kanbanTickets)) {
+      const index = tickets.findIndex(ticket => ticket.id === activeId);
+      if (index !== -1) {
+        activeColumn = columnId;
+        activeIndex = index;
+        break;
+      }
+    }
+
+    if (activeColumn === null) return;
+
+    // Find which column the over item is in
+    let overColumn = null;
+    let overIndex = -1;
+    
+    for (const [columnId, tickets] of Object.entries(kanbanTickets)) {
+      const index = tickets.findIndex(ticket => ticket.id === overId);
+      if (index !== -1) {
+        overColumn = columnId;
+        overIndex = index;
+        break;
+      }
+    }
+
+    // If dropping on a column (not a specific ticket), add to the end
+    if (overColumn === null) {
+      // Check if overId is a column name
+      if (['created', 'inProgress', 'completed'].includes(overId)) {
+        overColumn = overId;
+        overIndex = kanbanTickets[overColumn].length;
+      } else {
+        return;
+      }
+    }
+
+    if (activeColumn === overColumn) {
+      // Moving within the same column
+      setKanbanTickets(prev => ({
+        ...prev,
+        [activeColumn]: arrayMove(prev[activeColumn], activeIndex, overIndex)
+      }));
+    } else {
+      // Moving between columns
+      const activeTicket = kanbanTickets[activeColumn][activeIndex];
+      
+      setKanbanTickets(prev => ({
+        ...prev,
+        [activeColumn]: prev[activeColumn].filter(ticket => ticket.id !== activeId),
+        [overColumn]: [
+          ...prev[overColumn].slice(0, overIndex),
+          activeTicket,
+          ...prev[overColumn].slice(overIndex)
+        ]
+      }));
+    }
+  };
 
   const [clients] = useState([
     { id: 1, name: 'ABC Corp', logo: '🏢', revenue: '$125,000', status: 'active' },
@@ -120,97 +265,121 @@ const HomePage = () => {
               </h2>
               <p>Track and manage your active tasks and projects</p>
             </div>
-            <div className="kanban-board">
-              <div className="kanban-column">
-                <div className="column-header">
-                  <div className="column-title">
-                    <span className="column-icon">➕</span>
-                    <h3>Created</h3>
-                  </div>
-                  <span className="ticket-count">{kanbanTickets.created.length}</span>
-                </div>
-                <div className="tickets-list">
-                  {kanbanTickets.created.map(ticket => (
-                    <div key={ticket.id} className="ticket-card">
-                      <div className="ticket-header">
-                        <span className={`priority-badge ${ticket.priority}`}>
-                          <span className="priority-icon">
-                            {ticket.priority === 'high' ? '🔴' : ticket.priority === 'medium' ? '🟡' : '🟢'}
-                          </span>
-                          {ticket.priority}
-                        </span>
-                        <span className="ticket-time">{ticket.created}</span>
-                      </div>
-                      <h4>{ticket.title}</h4>
-                      <div className="ticket-client">
-                        <span className="client-icon">🏢</span>
-                        {ticket.client}
-                      </div>
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
+            >
+              <div className="kanban-board">
+                <div className="kanban-column">
+                  <div className="column-header">
+                    <div className="column-title">
+                      <span className="column-icon">➕</span>
+                      <h3>Created</h3>
                     </div>
-                  ))}
+                    <span className="ticket-count">{kanbanTickets.created.length}</span>
+                  </div>
+                  <SortableContext 
+                    id="created" 
+                    items={kanbanTickets.created.map(ticket => ticket.id)}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    <div className="tickets-list">
+                      {kanbanTickets.created.map(ticket => (
+                        <SortableTicket key={ticket.id} ticket={ticket} />
+                      ))}
+                    </div>
+                  </SortableContext>
                 </div>
-              </div>
 
-              <div className="kanban-column">
-                <div className="column-header">
-                  <div className="column-title">
-                    <span className="column-icon">⚡</span>
-                    <h3>In Progress</h3>
-                  </div>
-                  <span className="ticket-count">{kanbanTickets.inProgress.length}</span>
-                </div>
-                <div className="tickets-list">
-                  {kanbanTickets.inProgress.map(ticket => (
-                    <div key={ticket.id} className="ticket-card">
-                      <div className="ticket-header">
-                        <span className={`priority-badge ${ticket.priority}`}>
-                          <span className="priority-icon">
-                            {ticket.priority === 'high' ? '🔴' : ticket.priority === 'medium' ? '🟡' : '🟢'}
-                          </span>
-                          {ticket.priority}
-                        </span>
-                        <span className="ticket-time">{ticket.created}</span>
-                      </div>
-                      <h4>{ticket.title}</h4>
-                      <div className="ticket-client">
-                        <span className="client-icon">🏢</span>
-                        {ticket.client}
-                      </div>
+                <div className="kanban-column">
+                  <div className="column-header">
+                    <div className="column-title">
+                      <span className="column-icon">⚡</span>
+                      <h3>In Progress</h3>
                     </div>
-                  ))}
+                    <span className="ticket-count">{kanbanTickets.inProgress.length}</span>
+                  </div>
+                  <SortableContext 
+                    id="inProgress" 
+                    items={kanbanTickets.inProgress.map(ticket => ticket.id)}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    <div className="tickets-list">
+                      {kanbanTickets.inProgress.map(ticket => (
+                        <SortableTicket key={ticket.id} ticket={ticket} />
+                      ))}
+                    </div>
+                  </SortableContext>
                 </div>
-              </div>
 
-              <div className="kanban-column">
-                <div className="column-header">
-                  <div className="column-title">
-                    <span className="column-icon">✅</span>
-                    <h3>Completed</h3>
-                  </div>
-                  <span className="ticket-count">{kanbanTickets.completed.length}</span>
-                </div>
-                <div className="tickets-list">
-                  {kanbanTickets.completed.map(ticket => (
-                    <div key={ticket.id} className="ticket-card completed">
-                      <div className="ticket-header">
-                        <span className={`priority-badge ${ticket.priority}`}>
-                          <span className="priority-icon">
-                            {ticket.priority === 'high' ? '🔴' : ticket.priority === 'medium' ? '🟡' : '🟢'}
-                          </span>
-                          {ticket.priority}
-                        </span>
-                        <span className="ticket-time">{ticket.created}</span>
-                      </div>
-                      <h4>{ticket.title}</h4>
-                      <div className="ticket-client">
-                        <span className="client-icon">🏢</span>
-                        {ticket.client}
-                      </div>
+                <div className="kanban-column">
+                  <div className="column-header">
+                    <div className="column-title">
+                      <span className="column-icon">✅</span>
+                      <h3>Completed</h3>
                     </div>
-                  ))}
+                    <span className="ticket-count">{kanbanTickets.completed.length}</span>
+                  </div>
+                  <SortableContext 
+                    id="completed" 
+                    items={kanbanTickets.completed.map(ticket => ticket.id)}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    <div className="tickets-list">
+                      {kanbanTickets.completed.map(ticket => (
+                        <div key={ticket.id} className="ticket-card completed">
+                          <div className="ticket-header">
+                            <span className={`priority-badge ${ticket.priority}`}>
+                              <span className="priority-icon">
+                                {ticket.priority === 'high' ? '🔴' : ticket.priority === 'medium' ? '🟡' : '🟢'}
+                              </span>
+                              {ticket.priority}
+                            </span>
+                            <span className="ticket-time">{ticket.created}</span>
+                          </div>
+                          <h4>{ticket.title}</h4>
+                          <div className="ticket-client">
+                            <span className="client-icon">🏢</span>
+                            {ticket.client}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </SortableContext>
                 </div>
               </div>
-            </div>
+              
+              <DragOverlay>
+                {activeId ? (
+                  <div className="ticket-card dragging">
+                    {(() => {
+                      const ticket = [...kanbanTickets.created, ...kanbanTickets.inProgress, ...kanbanTickets.completed]
+                        .find(t => t.id === activeId);
+                      return ticket ? (
+                        <>
+                          <div className="ticket-header">
+                            <span className={`priority-badge ${ticket.priority}`}>
+                              <span className="priority-icon">
+                                {ticket.priority === 'high' ? '🔴' : ticket.priority === 'medium' ? '🟡' : '🟢'}
+                              </span>
+                              {ticket.priority}
+                            </span>
+                            <span className="ticket-time">{ticket.created}</span>
+                          </div>
+                          <h4>{ticket.title}</h4>
+                          <div className="ticket-client">
+                            <span className="client-icon">🏢</span>
+                            {ticket.client}
+                          </div>
+                        </>
+                      ) : null;
+                    })()}
+                  </div>
+                ) : null}
+              </DragOverlay>
+            </DndContext>
           </div>
 
           {/* AI Answered Review Board */}
