@@ -1,11 +1,26 @@
 /* Brand Colors */
 :root {
   --primary: #EF6351;
+  --primary-light: #F47C6B;
+  --primary-dark: #D54A3A;
   --accent: #FDF0E0;
+  --accent-light: #FFF8F3;
   --background: #FFFFFF;
-  --text-dark: #232A39;
-  --text-light: #FFFFFF;
-  --border: #E5E7EB;
+  --background-alt: #FAFBFC;
+  --text-dark: #1A202C;
+  --text-medium: #4A5568;
+  --text-light: #718096;
+  --text-white: #FFFFFF;
+  --border: #E2E8F0;
+  --border-light: #F1F5F9;
+  --success: #48BB78;
+  --success-light: #C6F6D5;
+  --warning: #ED8936;
+  --warning-light: #FEEBC8;
+  --error: #F56565;
+  --error-light: #FED7D7;
+  --info: #4299E1;
+  --info-light: #BEE3F8;
 }
 
 /* Typography */
@@ -36,7 +51,20 @@
 
 /* Shadows */
 :root {
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.08);
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.12);
   --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.15);
+  --shadow-xl: 0 12px 40px rgba(0, 0, 0, 0.18);
+  --shadow-2xl: 0 20px 60px rgba(0, 0, 0, 0.25);
+}
+
+/* Gradients */
+:root {
+  --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  --gradient-accent: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+  --gradient-success: linear-gradient(135deg, var(--success) 0%, #68D391 100%);
+  --gradient-warning: linear-gradient(135deg, var(--warning) 0%, #F6AD55 100%);
+  --gradient-error: linear-gradient(135deg, var(--error) 0%, #FC8181 100%);
+  --gradient-info: linear-gradient(135deg, var(--info) 0%, #63B3ED 100%);
 }
