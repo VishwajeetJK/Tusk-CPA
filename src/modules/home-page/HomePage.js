@@ -45,7 +45,7 @@ const SortableTicket = ({ ticket }) => {
       style={style}
       {...attributes}
       {...listeners}
-      className="ticket-card"
+      className={`ticket-card ${ticket.isCompleted ? 'completed' : ''}`}
     >
       <div className="ticket-header">
         <span className={`priority-badge ${ticket.priority}`}>
@@ -102,7 +102,7 @@ const HomePage = () => {
       { id: 3, title: 'Tax planning consultation', client: 'Smith & Associates', priority: 'high', created: '1 day ago' }
     ],
     completed: [
-      { id: 4, title: 'Monthly reconciliation', client: 'ABC Corp', priority: 'low', created: '2 days ago' }
+      { id: 4, title: 'Monthly reconciliation', client: 'ABC Corp', priority: 'low', created: '2 days ago', isCompleted: true }
     ]
   });
 
@@ -177,12 +177,18 @@ const HomePage = () => {
       // Moving between columns
       const activeTicket = kanbanTickets[activeColumn][activeIndex];
       
+      // Add isCompleted flag based on target column
+      const updatedTicket = {
+        ...activeTicket,
+        isCompleted: overColumn === 'completed'
+      };
+      
       setKanbanTickets(prev => ({
         ...prev,
         [activeColumn]: prev[activeColumn].filter(ticket => ticket.id !== activeId),
         [overColumn]: [
           ...prev[overColumn].slice(0, overIndex),
-          activeTicket,
+          updatedTicket,
           ...prev[overColumn].slice(overIndex)
         ]
       }));
@@ -329,22 +335,7 @@ const HomePage = () => {
                   >
                     <div className="tickets-list">
                       {kanbanTickets.completed.map(ticket => (
-                        <div key={ticket.id} className="ticket-card completed">
-                          <div className="ticket-header">
-                            <span className={`priority-badge ${ticket.priority}`}>
-                              <span className="priority-icon">
-                                {ticket.priority === 'high' ? '🔴' : ticket.priority === 'medium' ? '🟡' : '🟢'}
-                              </span>
-                              {ticket.priority}
-                            </span>
-                            <span className="ticket-time">{ticket.created}</span>
-                          </div>
-                          <h4>{ticket.title}</h4>
-                          <div className="ticket-client">
-                            <span className="client-icon">🏢</span>
-                            {ticket.client}
-                          </div>
-                        </div>
+                        <SortableTicket key={ticket.id} ticket={{...ticket, isCompleted: true}} />
                       ))}
                     </div>
                   </SortableContext>
