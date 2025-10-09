@@ -111,110 +111,182 @@ const HomePage = () => {
             </div>
           </div>
 
-          <div className="dashboard-content">
-            {/* AI Answered Review Board */}
-            <div className="ai-review-section">
-              <h2>AI Answered Review Board</h2>
-              <div className="review-board">
-                {aiQueries.map(query => (
-                  <div key={query.id} className="review-item">
-                    <div className="review-header">
-                      <div className="client-info">
-                        <span className="client-name">{query.clientName}</span>
-                        <span className="query-time">{query.timestamp}</span>
-                      </div>
-                    </div>
-                    <div className="query-content">
-                      <div className="query-question">
-                        <strong>Query:</strong> {query.query}
-                      </div>
-                      <div className="ai-answer">
-                        <strong>AI Answer:</strong> {query.aiAnswer}
-                      </div>
-                      <div className="data-sources">
-                        <strong>Data Sources:</strong> {query.dataSources.join(', ')}
-                      </div>
-                    </div>
-                    <div className="review-actions">
-                      <button 
-                        className="btn btn-primary"
-                        onClick={() => handleApproveQuery(query.id)}
-                      >
-                        Approve
-                      </button>
-                      <button 
-                        className="btn btn-secondary"
-                        onClick={() => handleEscalateQuery(query.id)}
-                      >
-                        Escalate
-                      </button>
-                    </div>
+          {/* Project Management Dashboard */}
+          <div className="kanban-section">
+            <div className="section-header">
+              <h2>
+                <span className="section-icon">📋</span>
+                Project Management Dashboard
+              </h2>
+              <p>Track and manage your active tasks and projects</p>
+            </div>
+            <div className="kanban-board">
+              <div className="kanban-column">
+                <div className="column-header">
+                  <div className="column-title">
+                    <span className="column-icon">➕</span>
+                    <h3>Created</h3>
                   </div>
-                ))}
+                  <span className="ticket-count">{kanbanTickets.created.length}</span>
+                </div>
+                <div className="tickets-list">
+                  {kanbanTickets.created.map(ticket => (
+                    <div key={ticket.id} className="ticket-card">
+                      <div className="ticket-header">
+                        <span className={`priority-badge ${ticket.priority}`}>
+                          <span className="priority-icon">
+                            {ticket.priority === 'high' ? '🔴' : ticket.priority === 'medium' ? '🟡' : '🟢'}
+                          </span>
+                          {ticket.priority}
+                        </span>
+                        <span className="ticket-time">{ticket.created}</span>
+                      </div>
+                      <h4>{ticket.title}</h4>
+                      <div className="ticket-client">
+                        <span className="client-icon">🏢</span>
+                        {ticket.client}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="kanban-column">
+                <div className="column-header">
+                  <div className="column-title">
+                    <span className="column-icon">⚡</span>
+                    <h3>In Progress</h3>
+                  </div>
+                  <span className="ticket-count">{kanbanTickets.inProgress.length}</span>
+                </div>
+                <div className="tickets-list">
+                  {kanbanTickets.inProgress.map(ticket => (
+                    <div key={ticket.id} className="ticket-card">
+                      <div className="ticket-header">
+                        <span className={`priority-badge ${ticket.priority}`}>
+                          <span className="priority-icon">
+                            {ticket.priority === 'high' ? '🔴' : ticket.priority === 'medium' ? '🟡' : '🟢'}
+                          </span>
+                          {ticket.priority}
+                        </span>
+                        <span className="ticket-time">{ticket.created}</span>
+                      </div>
+                      <h4>{ticket.title}</h4>
+                      <div className="ticket-client">
+                        <span className="client-icon">🏢</span>
+                        {ticket.client}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="kanban-column">
+                <div className="column-header">
+                  <div className="column-title">
+                    <span className="column-icon">✅</span>
+                    <h3>Completed</h3>
+                  </div>
+                  <span className="ticket-count">{kanbanTickets.completed.length}</span>
+                </div>
+                <div className="tickets-list">
+                  {kanbanTickets.completed.map(ticket => (
+                    <div key={ticket.id} className="ticket-card completed">
+                      <div className="ticket-header">
+                        <span className={`priority-badge ${ticket.priority}`}>
+                          <span className="priority-icon">
+                            {ticket.priority === 'high' ? '🔴' : ticket.priority === 'medium' ? '🟡' : '🟢'}
+                          </span>
+                          {ticket.priority}
+                        </span>
+                        <span className="ticket-time">{ticket.created}</span>
+                      </div>
+                      <h4>{ticket.title}</h4>
+                      <div className="ticket-client">
+                        <span className="client-icon">🏢</span>
+                        {ticket.client}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
+          </div>
 
-            {/* Project Management Dashboard */}
-            <div className="kanban-section">
-              <h2>Project Management Dashboard</h2>
-              <div className="kanban-board">
-                <div className="kanban-column">
-                  <div className="column-header">
-                    <h3>Created</h3>
-                    <span className="ticket-count">{kanbanTickets.created.length}</span>
-                  </div>
-                  <div className="tickets-list">
-                    {kanbanTickets.created.map(ticket => (
-                      <div key={ticket.id} className="ticket-card">
-                        <div className="ticket-header">
-                          <span className={`priority-badge ${ticket.priority}`}>{ticket.priority}</span>
-                          <span className="ticket-time">{ticket.created}</span>
-                        </div>
-                        <h4>{ticket.title}</h4>
-                        <p className="ticket-client">{ticket.client}</p>
+          {/* AI Answered Review Board */}
+          <div className="ai-review-section">
+            <div className="section-header">
+              <h2>
+                <span className="section-icon">🤖</span>
+                AI Answered Review Board
+              </h2>
+              <p>Review and approve AI-generated responses before sending to clients</p>
+            </div>
+            <div className="review-board">
+              {aiQueries.map(query => (
+                <div key={query.id} className="review-item">
+                  <div className="review-header">
+                    <div className="client-info">
+                      <div className="client-avatar">
+                        <span className="client-initial">{query.clientName.charAt(0)}</span>
                       </div>
-                    ))}
+                      <div className="client-details">
+                        <span className="client-name">{query.clientName}</span>
+                        <span className="query-time">
+                          <span className="time-icon">🕒</span>
+                          {query.timestamp}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="query-status">
+                      <span className="status-badge pending">Pending Review</span>
+                    </div>
+                  </div>
+                  <div className="query-content">
+                    <div className="query-question">
+                      <div className="content-label">
+                        <span className="label-icon">❓</span>
+                        Client Query
+                      </div>
+                      <p>{query.query}</p>
+                    </div>
+                    <div className="ai-answer">
+                      <div className="content-label">
+                        <span className="label-icon">🤖</span>
+                        AI Response
+                      </div>
+                      <p>{query.aiAnswer}</p>
+                    </div>
+                    <div className="data-sources">
+                      <div className="content-label">
+                        <span className="label-icon">📊</span>
+                        Data Sources
+                      </div>
+                      <div className="sources-tags">
+                        {query.dataSources.map((source, index) => (
+                          <span key={index} className="source-tag">{source}</span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="review-actions">
+                    <button 
+                      className="btn btn-primary approve-btn"
+                      onClick={() => handleApproveQuery(query.id)}
+                    >
+                      <span className="btn-icon">✅</span>
+                      Approve & Send
+                    </button>
+                    <button 
+                      className="btn btn-secondary escalate-btn"
+                      onClick={() => handleEscalateQuery(query.id)}
+                    >
+                      <span className="btn-icon">⬆️</span>
+                      Escalate to Manual
+                    </button>
                   </div>
                 </div>
-
-                <div className="kanban-column">
-                  <div className="column-header">
-                    <h3>In Progress</h3>
-                    <span className="ticket-count">{kanbanTickets.inProgress.length}</span>
-                  </div>
-                  <div className="tickets-list">
-                    {kanbanTickets.inProgress.map(ticket => (
-                      <div key={ticket.id} className="ticket-card">
-                        <div className="ticket-header">
-                          <span className={`priority-badge ${ticket.priority}`}>{ticket.priority}</span>
-                          <span className="ticket-time">{ticket.created}</span>
-                        </div>
-                        <h4>{ticket.title}</h4>
-                        <p className="ticket-client">{ticket.client}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="kanban-column">
-                  <div className="column-header">
-                    <h3>Completed</h3>
-                    <span className="ticket-count">{kanbanTickets.completed.length}</span>
-                  </div>
-                  <div className="tickets-list">
-                    {kanbanTickets.completed.map(ticket => (
-                      <div key={ticket.id} className="ticket-card completed">
-                        <div className="ticket-header">
-                          <span className={`priority-badge ${ticket.priority}`}>{ticket.priority}</span>
-                          <span className="ticket-time">{ticket.created}</span>
-                        </div>
-                        <h4>{ticket.title}</h4>
-                        <p className="ticket-client">{ticket.client}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
 
