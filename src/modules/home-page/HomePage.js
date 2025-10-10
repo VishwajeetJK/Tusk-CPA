@@ -73,7 +73,8 @@ const HomePage = () => {
       query: 'What documents do I need for my Q4 tax return?',
       aiAnswer: 'For your Q4 tax return, you will need: W-2s, 1099s, receipts for business deductions, and any other income documents. Based on your QuickBooks data, I can see you have $15,000 in business expenses that qualify for deductions.',
       dataSources: ['QuickBooks', 'Previous Returns'],
-      timestamp: '2 hours ago'
+      timestamp: '2 hours ago',
+      agentType: 'chat'
     },
     {
       id: 2,
@@ -81,7 +82,8 @@ const HomePage = () => {
       query: 'How do I calculate overtime for my employees?',
       aiAnswer: 'Overtime is calculated at 1.5x the regular hourly rate for hours worked over 40 in a workweek. For salaried employees, divide annual salary by 2080 hours to get hourly rate, then multiply by 1.5 for overtime hours.',
       dataSources: ['Gusto', 'ADP'],
-      timestamp: '4 hours ago'
+      timestamp: '4 hours ago',
+      agentType: 'call'
     },
     {
       id: 3,
@@ -89,7 +91,26 @@ const HomePage = () => {
       query: 'Can I deduct home office expenses?',
       aiAnswer: 'Yes, you can deduct home office expenses if you use part of your home exclusively and regularly for business. You can use either the simplified method ($5/sq ft up to 300 sq ft) or actual expenses method.',
       dataSources: ['Expensify', 'Previous Returns'],
-      timestamp: '6 hours ago'
+      timestamp: '6 hours ago',
+      agentType: 'voice'
+    },
+    {
+      id: 4,
+      clientName: 'TechStart Inc',
+      query: 'What are the tax implications of our recent funding round?',
+      aiAnswer: 'For your Series A funding, you\'ll need to consider equity dilution, stock option grants, and potential AMT implications. The $2M raised will be recorded as paid-in capital, and you should consult with your tax advisor about 83(b) elections for employee stock options.',
+      dataSources: ['Cap Table', 'Previous Returns', 'Legal Docs'],
+      timestamp: '1 hour ago',
+      agentType: 'call'
+    },
+    {
+      id: 5,
+      clientName: 'Retail Plus',
+      query: 'Help me understand sales tax requirements for our new location',
+      aiAnswer: 'For your new store in California, you\'ll need to register for a seller\'s permit, collect 7.25% state sales tax plus local district taxes. You should also consider nexus implications if you\'re selling online to California customers.',
+      dataSources: ['State Tax Database', 'Previous Returns'],
+      timestamp: '30 minutes ago',
+      agentType: 'voice'
     }
   ]);
 
@@ -399,6 +420,11 @@ const HomePage = () => {
                       </div>
                     </div>
                     <div className="query-status">
+                      <span className={`agent-type-badge ${query.agentType}`}>
+                        {query.agentType === 'chat' ? '💬 Chat Agent' : 
+                         query.agentType === 'call' ? '📞 Call Agent' : 
+                         query.agentType === 'voice' ? '🎤 Voice Agent' : '🤖 AI Agent'}
+                      </span>
                       <span className="status-badge pending">Pending Review</span>
                     </div>
                   </div>

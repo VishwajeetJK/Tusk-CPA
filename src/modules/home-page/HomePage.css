@@ -362,6 +362,33 @@
   color: var(--warning);
 }
 
+.agent-type-badge {
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  box-shadow: var(--shadow-xs);
+  letter-spacing: 0.3px;
+  margin-right: 8px;
+  display: inline-block;
+}
+
+.agent-type-badge.chat {
+  background: var(--info-light);
+  color: var(--info);
+}
+
+.agent-type-badge.call {
+  background: var(--success-light);
+  color: var(--success);
+}
+
+.agent-type-badge.voice {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
 .query-content {
   margin-bottom: 24px;
   display: flex;
