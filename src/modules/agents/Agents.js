@@ -1,153 +1,327 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import GlobalNav from '../../shared/components/GlobalNav';
 import './Agents.css';
 
 const Agents = () => {
-  const [agents] = useState([
+  const [selectedAgent, setSelectedAgent] = useState(null);
+  const [chatMessages, setChatMessages] = useState([
     {
       id: 1,
-      name: 'Tax Assistant',
-      status: 'active',
-      queriesHandled: 156,
-      accuracy: 94,
-      lastActive: '2 minutes ago',
-      description: 'Handles tax-related questions and provides accurate guidance'
+      type: 'user',
+      content: 'Hello! I need help with my client\'s tax situation.',
+      timestamp: '2:30 PM'
     },
     {
       id: 2,
-      name: 'Payroll Helper',
-      status: 'active',
-      queriesHandled: 89,
-      accuracy: 91,
-      lastActive: '15 minutes ago',
-      description: 'Assists with payroll calculations and employee inquiries'
-    },
-    {
-      id: 3,
-      name: 'Expense Tracker',
-      status: 'inactive',
-      queriesHandled: 67,
-      accuracy: 88,
-      lastActive: '2 hours ago',
-      description: 'Helps categorize and track business expenses'
+      type: 'assistant',
+      content: 'I\'d be happy to help you with your client\'s tax situation! Could you provide more details about what specific tax issue they\'re facing?',
+      timestamp: '2:31 PM'
     }
   ]);
+  const [newMessage, setNewMessage] = useState('');
+  const [isVoiceMode, setIsVoiceMode] = useState(false);
+  const [isDictating, setIsDictating] = useState(false);
 
-  const [selectedAgent, setSelectedAgent] = useState(null);
+  const agents = [
+    {
+      id: 'tax-assistant',
+      name: 'Tax Assistant',
+      description: 'Expert in tax law, deductions, and compliance',
+      icon: '🧾',
+      status: 'active',
+      category: 'Tax'
+    },
+    {
+      id: 'payroll-helper',
+      name: 'Payroll Helper',
+      description: 'Handles payroll calculations and employee questions',
+      icon: '💰',
+      status: 'inactive',
+      category: 'Payroll'
+    },
+    {
+      id: 'expense-tracker',
+      name: 'Expense Tracker',
+      description: 'Categorizes and tracks business expenses',
+      icon: '📊',
+      status: 'active',
+      category: 'Expenses'
+    },
+    {
+      id: 'bookkeeping-bot',
+      name: 'Bookkeeping Bot',
+      description: 'Assists with general bookkeeping tasks',
+      icon: '📚',
+      status: 'inactive',
+      category: 'Bookkeeping'
+    },
+    {
+      id: 'audit-assistant',
+      name: 'Audit Assistant',
+      description: 'Helps prepare for audits and compliance',
+      icon: '🔍',
+      status: 'active',
+      category: 'Audit'
+    },
+    {
+      id: 'client-advisor',
+      name: 'Client Advisor',
+      description: 'Provides general financial advice to clients',
+      icon: '💡',
+      status: 'inactive',
+      category: 'Advisory'
+    }
+  ];
+
+  const recentChats = [
+    { id: 1, title: 'Tax Planning for ABC Corp', timestamp: '2 hours ago' },
+    { id: 2, title: 'Payroll Questions - XYZ LLC', timestamp: '1 day ago' },
+    { id: 3, title: 'Expense Categorization Help', timestamp: '2 days ago' },
+    { id: 4, title: 'Q4 Financial Review', timestamp: '3 days ago' }
+  ];
+
+  const handleSendMessage = () => {
+    if (newMessage.trim()) {
+      const userMessage = {
+        id: chatMessages.length + 1,
+        type: 'user',
+        content: newMessage,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+      
+      setChatMessages([...chatMessages, userMessage]);
+      setNewMessage('');
+      
+      // Simulate AI response
+      setTimeout(() => {
+        const aiResponse = {
+          id: chatMessages.length + 2,
+          type: 'assistant',
+          content: 'I understand your question. Let me help you with that. Based on the information provided, here\'s what I recommend...',
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
+        setChatMessages(prev => [...prev, aiResponse]);
+      }, 1000);
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+
+  const toggleAgentStatus = (agentId) => {
+    // This would update the agent status in a real app
+    console.log('Toggling agent status:', agentId);
+  };
+
+  const handleFileUpload = () => {
+    // File upload functionality
+    console.log('File upload clicked');
+  };
+
+  const handleDictate = () => {
+    setIsDictating(!isDictating);
+    // Voice dictation functionality
+    console.log('Dictate toggled:', !isDictating);
+  };
+
+  const toggleVoiceMode = () => {
+    setIsVoiceMode(!isVoiceMode);
+    console.log('Voice mode toggled:', !isVoiceMode);
+  };
 
   return (
-    <div className="agents">
+    <div className="agents-page">
       <GlobalNav />
-
-      <main className="agents-main">
-        <div className="container">
-          <div className="agents-header-section">
-            <h1>AI Agents Management</h1>
-            <button className="btn btn-primary">Create New Agent</button>
+      
+      <div className="agents-layout">
+        {/* Left Sidebar */}
+        <div className="agents-sidebar">
+          <div className="sidebar-header">
+            <button className="new-chat-btn">
+              <span className="btn-icon">+</span>
+              New Chat
+            </button>
           </div>
 
-          <div className="agents-grid">
-            {agents.map(agent => (
-              <div 
-                key={agent.id} 
-                className={`agent-card ${agent.status} ${selectedAgent === agent.id ? 'selected' : ''}`}
-                onClick={() => setSelectedAgent(agent.id)}
-              >
-                <div className="agent-header">
-                  <div className="agent-icon">🤖</div>
+          <div className="sidebar-section">
+            <div className="section-header">
+              <span className="section-icon">🔍</span>
+              Search Chats
+            </div>
+            <div className="search-box">
+              <input type="text" placeholder="Search conversations..." />
+            </div>
+          </div>
+
+          <div className="sidebar-section">
+            <div className="section-header">
+              <span className="section-icon">📚</span>
+              Libraries
+            </div>
+            <div className="library-item">
+              <span className="library-icon">📄</span>
+              Tax Documents
+            </div>
+            <div className="library-item">
+              <span className="library-icon">📊</span>
+              Financial Reports
+            </div>
+            <div className="library-item">
+              <span className="library-icon">⚖️</span>
+              Legal Templates
+            </div>
+          </div>
+
+          <div className="sidebar-section">
+            <div className="section-header">
+              <span className="section-icon">👥</span>
+              My Clients
+            </div>
+            <div className="client-item">
+              <span className="client-avatar">A</span>
+              ABC Corp
+            </div>
+            <div className="client-item">
+              <span className="client-avatar">X</span>
+              XYZ LLC
+            </div>
+            <div className="client-item">
+              <span className="client-avatar">S</span>
+              Smith & Associates
+            </div>
+          </div>
+
+          <div className="sidebar-section">
+            <div className="section-header">
+              <span className="section-icon">🤖</span>
+              Tusk Agents
+            </div>
+            <div className="agents-list">
+              {agents.map(agent => (
+                <div 
+                  key={agent.id} 
+                  className={`agent-item ${selectedAgent === agent.id ? 'selected' : ''}`}
+                  onClick={() => setSelectedAgent(agent.id)}
+                >
                   <div className="agent-info">
-                    <h3>{agent.name}</h3>
-                    <span className={`status-badge ${agent.status}`}>
-                      {agent.status}
-                    </span>
+                    <span className="agent-icon">{agent.icon}</span>
+                    <div className="agent-details">
+                      <span className="agent-name">{agent.name}</span>
+                      <span className="agent-category">{agent.category}</span>
+                    </div>
+                  </div>
+                  <div className="agent-controls">
+                    <label className="toggle-switch">
+                      <input 
+                        type="checkbox" 
+                        checked={agent.status === 'active'}
+                        onChange={() => toggleAgentStatus(agent.id)}
+                      />
+                      <span className="slider"></span>
+                    </label>
                   </div>
                 </div>
-                
-                <div className="agent-description">
-                  <p>{agent.description}</p>
+              ))}
+            </div>
+          </div>
+
+          <div className="sidebar-section">
+            <div className="section-header">
+              <span className="section-icon">💬</span>
+              Recent Chats
+            </div>
+            {recentChats.map(chat => (
+              <div key={chat.id} className="chat-item">
+                <span className="chat-title">{chat.title}</span>
+                <span className="chat-time">{chat.timestamp}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Main Chat Area */}
+        <div className="agents-main">
+          <div className="chat-header">
+            <div className="selected-agent-info">
+              {selectedAgent ? (
+                <>
+                  <span className="agent-icon">
+                    {agents.find(a => a.id === selectedAgent)?.icon}
+                  </span>
+                  <div className="agent-details">
+                    <h2>{agents.find(a => a.id === selectedAgent)?.name}</h2>
+                    <p>{agents.find(a => a.id === selectedAgent)?.description}</p>
+                  </div>
+                </>
+              ) : (
+                <div className="no-agent-selected">
+                  <h2>Select an Agent</h2>
+                  <p>Choose an agent from the sidebar to start a conversation</p>
                 </div>
-                
-                <div className="agent-metrics">
-                  <div className="metric">
-                    <span className="metric-value">{agent.queriesHandled}</span>
-                    <span className="metric-label">Queries</span>
-                  </div>
-                  <div className="metric">
-                    <span className="metric-value">{agent.accuracy}%</span>
-                    <span className="metric-label">Accuracy</span>
-                  </div>
-                  <div className="metric">
-                    <span className="metric-value">{agent.lastActive}</span>
-                    <span className="metric-label">Last Active</span>
-                  </div>
+              )}
+            </div>
+          </div>
+
+          <div className="chat-messages">
+            {chatMessages.map(message => (
+              <div key={message.id} className={`message ${message.type}`}>
+                <div className="message-avatar">
+                  {message.type === 'user' ? '👤' : '🤖'}
                 </div>
-                
-                <div className="agent-actions">
-                  <button className="btn btn-sm btn-secondary">Configure</button>
-                  <button className="btn btn-sm btn-primary">View Logs</button>
+                <div className="message-content">
+                  <div className="message-text">{message.content}</div>
+                  <div className="message-time">{message.timestamp}</div>
                 </div>
               </div>
             ))}
           </div>
 
-          {selectedAgent && (
-            <div className="agent-details">
-              <div className="details-header">
-                <h2>Agent Details</h2>
-                <button 
-                  className="btn btn-secondary"
-                  onClick={() => setSelectedAgent(null)}
-                >
-                  Close
-                </button>
-              </div>
-              
-              <div className="details-content">
-                <div className="detail-section">
-                  <h3>Configuration</h3>
-                  <div className="config-form">
-                    <div className="form-group">
-                      <label>Agent Name</label>
-                      <input type="text" defaultValue="Tax Assistant" />
-                    </div>
-                    <div className="form-group">
-                      <label>Description</label>
-                      <textarea defaultValue="Handles tax-related questions and provides accurate guidance"></textarea>
-                    </div>
-                    <div className="form-group">
-                      <label>Response Style</label>
-                      <select>
-                        <option>Professional</option>
-                        <option>Friendly</option>
-                        <option>Concise</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="detail-section">
-                  <h3>Recent Activity</h3>
-                  <div className="activity-list">
-                    <div className="activity-item">
-                      <div className="activity-time">2 min ago</div>
-                      <div className="activity-text">Responded to tax deduction question</div>
-                    </div>
-                    <div className="activity-item">
-                      <div className="activity-time">15 min ago</div>
-                      <div className="activity-text">Helped with expense categorization</div>
-                    </div>
-                    <div className="activity-item">
-                      <div className="activity-time">1 hour ago</div>
-                      <div className="activity-text">Updated knowledge base</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+          <div className="chat-input-area">
+            <div className="input-tools">
+              <button className="tool-btn" onClick={handleFileUpload}>
+                <span className="tool-icon">📎</span>
+                Add Files
+              </button>
+              <button 
+                className={`tool-btn ${isDictating ? 'active' : ''}`} 
+                onClick={handleDictate}
+              >
+                <span className="tool-icon">🎤</span>
+                Dictate
+              </button>
+              <button 
+                className={`tool-btn ${isVoiceMode ? 'active' : ''}`} 
+                onClick={toggleVoiceMode}
+              >
+                <span className="tool-icon">🔊</span>
+                Voice Mode
+              </button>
             </div>
-          )}
+            
+            <div className="input-container">
+              <textarea
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder="Message your AI agent..."
+                className="message-input"
+                rows="1"
+              />
+              <button 
+                className="send-btn"
+                onClick={handleSendMessage}
+                disabled={!newMessage.trim()}
+              >
+                <span className="send-icon">➤</span>
+              </button>
+            </div>
+          </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 };
