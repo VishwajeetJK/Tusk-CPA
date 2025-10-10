@@ -349,21 +349,6 @@ input:checked + .slider:before {
   font-size: 14px;
 }
 
-.no-agent-selected {
-  text-align: center;
-  padding: 40px;
-}
-
-.no-agent-selected h2 {
-  color: var(--text-light);
-  font-size: 20px;
-  margin-bottom: 8px;
-}
-
-.no-agent-selected p {
-  color: var(--text-light);
-  font-size: 14px;
-}
 
 /* Chat Messages */
 .chat-messages {

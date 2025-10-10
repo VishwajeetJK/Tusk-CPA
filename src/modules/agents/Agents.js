@@ -3,7 +3,7 @@ import GlobalNav from '../../shared/components/GlobalNav';
 import './Agents.css';
 
 const Agents = () => {
-  const [selectedAgent, setSelectedAgent] = useState(null);
+  const [selectedAgent, setSelectedAgent] = useState('tax-assistant');
   const [chatMessages, setChatMessages] = useState([
     {
       id: 1,
@@ -252,7 +252,7 @@ const Agents = () => {
         <div className="agents-main">
           <div className="chat-header">
             <div className="selected-agent-info">
-              {selectedAgent ? (
+              {selectedAgent && (
                 <>
                   <span className="agent-icon">
                     {agents.find(a => a.id === selectedAgent)?.icon}
@@ -262,11 +262,6 @@ const Agents = () => {
                     <p>{agents.find(a => a.id === selectedAgent)?.description}</p>
                   </div>
                 </>
-              ) : (
-                <div className="no-agent-selected">
-                  <h2>Select an Agent</h2>
-                  <p>Choose an agent from the sidebar to start a conversation</p>
-                </div>
               )}
             </div>
           </div>
