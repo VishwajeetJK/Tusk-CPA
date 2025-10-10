@@ -22,7 +22,7 @@ const Agents = () => {
   const [isVoiceMode, setIsVoiceMode] = useState(false);
   const [isDictating, setIsDictating] = useState(false);
 
-  const agents = [
+  const [agents, setAgents] = useState([
     {
       id: 'tax-assistant',
       name: 'Tax Assistant',
@@ -71,7 +71,7 @@ const Agents = () => {
       status: 'inactive',
       category: 'Advisory'
     }
-  ];
+  ]);
 
   const recentChats = [
     { id: 1, title: 'Tax Planning for ABC Corp', timestamp: '2 hours ago' },
@@ -113,8 +113,13 @@ const Agents = () => {
   };
 
   const toggleAgentStatus = (agentId) => {
-    // This would update the agent status in a real app
-    console.log('Toggling agent status:', agentId);
+    setAgents(prevAgents => 
+      prevAgents.map(agent => 
+        agent.id === agentId 
+          ? { ...agent, status: agent.status === 'active' ? 'inactive' : 'active' }
+          : agent
+      )
+    );
   };
 
   const handleFileUpload = () => {
